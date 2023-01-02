@@ -29,21 +29,22 @@ pipeline {
                 echo 'BUILD EXECUTION STARTED'
                 sh 'go version'
                 sh 'go get ./...'
-                sh 'docker build . -t shadowshotx/product-go-micro'
+                //sh 'docker build . -t shadowshotx/product-go-micro'
+                dockerImage = docker.build("shubhamglobal/my-golang-app:latest")
             }
+            
         }
+        
+    
+    
+    stage('Push image') {
+       //dockerImage = "docker push mounishreddy/reactjs:latest"
+        withDockerRegistry([ credentialsId: "dockerhubaccount", url : "" ]) {
+        dockerImage.push()
+       }
+    }
        
-        stage('Docker Push') {
-            agent any
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhubaccount', passwordVariable: 'dockerhubPassword', usernameVariable: 'shubhamglobal')]) {
-                sh "docker login -u ${env.shubhamglobal} -p ${env.dockerhubPassword}"
-                sh 'docker push shadowshotx/product-go-micro'
-                }
-            }
-        }
-        
-        
+    
       
 
     }
