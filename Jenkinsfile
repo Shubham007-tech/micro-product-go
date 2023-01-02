@@ -21,9 +21,29 @@ pipeline {
   
   
       stages {
+          
+           stage("unit-test") {
+            steps {
+                container ('go') {
+                   echo 'UNIT TEST EXECUTION STARTED'
+                   sh 'make unit-tests'
+                }
+               
+            }
+        }
+        stage("functional-test") {
+            steps {
+                container ('go') {
+                    echo 'FUNCTIONAL TEST EXECUTION STARTED'
+                    sh 'make functional-tests'
        
-          
-          
+             }
+  
+                
+            }
+        }
+       
+           
           
         stage("build") {
             steps {
