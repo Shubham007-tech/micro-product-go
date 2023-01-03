@@ -57,6 +57,31 @@ pipeline {
                
             }
         }
+          
+          
+         	    
+	    stage('build & push image on harbor') {
+          steps {
+            container('go') {
+                  sh 'docker build -t $REGISTRY/$HARBOR_NAMESPACE/$APP_NAME:2.0.0-SNAPSHOT .'
+                  withCredentials([usernamePassword(passwordVariable: 'HARBOR_PASSWORD', usernameVariable: 'HARBOR_USERNAME', credentialsId: "$HARBOR_CREDENTIAL_ID",)]) {
+                                sh 'echo "$HARBOR_PASSWORD" | docker login $REGISTRY -u "$HARBOR_USERNAME" --password-stdin'
+                                sh 'docker push $REGISTRY/$HARBOR_NAMESPACE/$APP_NAME:2.0.0-SNAPSHOT'
+        }
+      }
+    }
+  }
+	    stage("Remove the local Docker image") {
+      steps {
+        container('go') {
+          sh '''
+            docker image rm $REGISTRY/$HARBOR_NAMESPACE/$APP_NAME:2.0.0-SNAPSHOT
+          '''
+        }
+      }
+    }
+
+
       
       
     }
